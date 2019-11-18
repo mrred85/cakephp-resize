@@ -10,7 +10,7 @@ Resize images in web application by url.
 ### Requirements
 - PHP >= 7.1.x
 - GD exension enabled
-- CakePHP >= 3.5.x
+- CakePHP >= 3.6.x
 
 ### Composer
 Add following statement in `require` area.
