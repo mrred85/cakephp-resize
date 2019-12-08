@@ -114,7 +114,7 @@ class ResizeController extends Controller
                 ob_end_clean();
 
                 $response = $this->getResponse();
-                if (!strstr($url, '://')) {
+                if (strpos($url, '://') === false) {
                     $response = $response->withModified(filemtime($url));
                 }
                 $response = $response
