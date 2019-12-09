@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resize Helper
  *
@@ -32,7 +33,7 @@ class ResizeHelper extends Helper
      * @param string $folder Folder path
      * @param int $width Image width
      * @param int $height Image height
-     * @param null|string $link Full base URL
+     * @param string|null $link Full base URL
      * @param string $type Image crop type
      * @return array|string
      */
@@ -72,7 +73,7 @@ class ResizeHelper extends Helper
      * @param int $width Image width
      * @param int $height Image height
      * @param array $options Image options
-     * @return null|string
+     * @return string|null
      */
     public function image(string $imageName, string $folder, int $width, int $height, array $options = [])
     {
