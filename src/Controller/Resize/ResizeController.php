@@ -38,16 +38,26 @@ class ResizeController extends Controller
                 $mime = $size['mime'];
                 $ratio = $originalWidth / $originalHeight;
 
-                $originalImage = null;
                 switch ($mime) {
-                    case 'image/jpeg':
-                        $originalImage = imagecreatefromjpeg($url);
-                        break;
                     case 'image/png':
                         $originalImage = imagecreatefrompng($url);
+                        $transparent = true;
                         break;
                     case 'image/gif':
                         $originalImage = imagecreatefromgif($url);
+                        $transparent = false;
+                        break;
+                    case 'image/webp':
+                        $originalImage = imagecreatefromwebp($url);
+                        $transparent = true;
+                        break;
+                    case 'image/jpeg':
+                        $originalImage = imagecreatefromjpeg($url);
+                        $transparent = false;
+                        break;
+                    default:
+                        $originalImage = imagecreatefromstring(file_get_contents($url));
+                        $transparent = false;
                         break;
                 }
 
@@ -73,7 +83,7 @@ class ResizeController extends Controller
                             $y = -((($originalHeight / ($originalWidth / $width)) / 2) - ($height / 2));
                             $height = $originalHeight / ($originalWidth / $width);
                         }
-                        if ($mime != 'image/png') {
+                        if ($transparent === false) {
                             imagefill($cropImage, 0, 0, imagecolorallocate($cropImage, 255, 255, 255));
                         }
                     } else {
@@ -99,14 +109,18 @@ class ResizeController extends Controller
 
                 ob_start();
                 switch ($mime) {
-                    case 'image/jpeg':
-                        imagejpeg($cropImage, null, 85);
-                        break;
                     case 'image/png':
                         imagepng($cropImage, null, 8);
                         break;
                     case 'image/gif':
                         imagegif($cropImage, null);
+                        break;
+                    case 'image/webp':
+                        imagewebp($cropImage, null, 85);
+                        break;
+                    case 'image/jpeg':
+                    default:
+                        imagejpeg($cropImage, null, 85);
                         break;
                 }
                 imagedestroy($originalImage);
