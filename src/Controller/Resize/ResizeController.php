@@ -25,7 +25,7 @@ class ResizeController extends Controller
      * @param bool $proportional Crop proportional
      * @return void
      */
-    private function _resize(string $url, string $dimension, bool $proportional = false)
+    private function _resize(string $url, string $dimension, bool $proportional = false): void
     {
         if ($url && $dimension) {
             $imgDimension = explode('x', trim($dimension));
@@ -83,7 +83,7 @@ class ResizeController extends Controller
                             $y = -((($originalHeight / ($originalWidth / $width)) / 2) - ($height / 2));
                             $height = $originalHeight / ($originalWidth / $width);
                         }
-                        if ($transparent === false) {
+                        if (!$transparent) {
                             imagefill($cropImage, 0, 0, imagecolorallocate($cropImage, 255, 255, 255));
                         }
                     } else {
@@ -154,7 +154,7 @@ class ResizeController extends Controller
      * @param string $img_ext Image extension
      * @return void
      */
-    public function imageResize(string $folder, string $img, string $dimension, string $img_ext)
+    public function imageResize(string $folder, string $img, string $dimension, string $img_ext): void
     {
         $imagePath = WWW_ROOT;
         if ($folder) {
@@ -177,7 +177,7 @@ class ResizeController extends Controller
      * @param string $img_ext Image extension
      * @return void
      */
-    public function imageResizeProportional(string $folder, string $img, string $dimension, string $img_ext)
+    public function imageResizeProportional(string $folder, string $img, string $dimension, string $img_ext): void
     {
         $imagePath = WWW_ROOT;
         if ($folder) {

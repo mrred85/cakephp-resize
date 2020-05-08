@@ -37,7 +37,7 @@ class ResizeHelper extends Helper
      * @param string $type Image crop type
      * @return array|string
      */
-    public function url(string $imageName, string $folder, int $width, int $height, $link = null, string $type = 'normal')
+    public function url(string $imageName, string $folder, int $width, int $height, ?bool $link = null, string $type = 'normal')
     {
         if ($type == 'proportional') {
             $name = 'resize:imgProportional';
@@ -75,14 +75,14 @@ class ResizeHelper extends Helper
      * @param array $options Image options
      * @return string|null
      */
-    public function image(string $imageName, string $folder, int $width, int $height, array $options = [])
+    public function image(string $imageName, string $folder, int $width, int $height, array $options = []): ?string
     {
         if (isset($options['proportional']) && $options['proportional'] === true) {
             $url = $this->url($imageName, $folder, $width, $height, null, 'proportional');
         } else {
             $url = $this->url($imageName, $folder, $width, $height, null);
         }
-        $fullBase = (isset($options['_full']) && $options['_full'] === true ? (bool)$options['full'] : false);
+        $fullBase = (isset($options['_full']) && $options['_full'] === true);
         unset($options['proportional'], $options['fullBase'], $options['_full'], $options['full_base']);
 
         if ($url) {
