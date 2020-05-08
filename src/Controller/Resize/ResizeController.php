@@ -11,6 +11,7 @@
 namespace App\Controller\Resize;
 
 use Cake\Controller\Controller;
+use Cake\Http\CallbackStream;
 
 /**
  * @package App\Controller\Resize
@@ -28,11 +29,11 @@ class ResizeController extends Controller
     private function _resize(string $url, string $dimension, bool $proportional = false): void
     {
         if ($url && $dimension) {
+            $size = getimagesize($url);
             $imgDimension = explode('x', trim($dimension));
-            $width = (int)$imgDimension[0];
-            $height = (int)$imgDimension[1];
-            if ($width && $height) {
-                $size = getimagesize($url);
+            if ($size && count($imgDimension) == 2) {
+                $width = (int)$imgDimension[0];
+                $height = (int)$imgDimension[1];
                 $originalWidth = $size[0];
                 $originalHeight = $size[1];
                 $mime = $size['mime'];
@@ -107,38 +108,36 @@ class ResizeController extends Controller
                 imagecopyresampled($cropImage, $originalImage, $x, $y, 0, 0, $width, $height, $originalWidth, $originalHeight);
                 imagesavealpha($cropImage, true);
 
-                ob_start();
-                switch ($mime) {
-                    case 'image/png':
-                        imagepng($cropImage, null, 8);
-                        break;
-                    case 'image/gif':
-                        imagegif($cropImage, null);
-                        break;
-                    case 'image/webp':
-                        imagewebp($cropImage, null, 85);
-                        break;
-                    case 'image/jpeg':
-                    default:
-                        imagejpeg($cropImage, null, 85);
-                        break;
-                }
+                $stream = new CallbackStream(function () use ($mime, $cropImage) {
+                    switch ($mime) {
+                        case 'image/png':
+                            imagepng($cropImage, null, 8);
+                            break;
+                        case 'image/gif':
+                            imagegif($cropImage, null);
+                            break;
+                        case 'image/webp':
+                            imagewebp($cropImage, null, 85);
+                            break;
+                        default:
+                            imagejpeg($cropImage, null, 85);
+                            break;
+                    }
+                    imagedestroy($cropImage);
+                });
                 imagedestroy($originalImage);
-                imagedestroy($cropImage);
-                $imageBody = ob_get_contents();
-                ob_end_clean();
 
                 $response = $this->getResponse();
                 if (strpos($url, '://') === false) {
                     $response = $response->withModified(filemtime($url));
                 }
                 $response = $response
-                    ->withType($mime)
+                    ->withType(str_replace('image/', '', $mime) ?: 'jpeg')
                     ->withExpires('+30 days')
                     ->withMaxAge(604800)
                     ->withMustRevalidate(true)
                     ->withEtag(md5($url), false)
-                    ->withStringBody($imageBody);
+                    ->withBody($stream);
                 $this->setResponse($response);
             }
             unset($originalHeight, $originalImage, $originalWidth, $width, $height, $size, $ratio, $mime, $x, $y);
