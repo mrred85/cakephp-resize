@@ -101,7 +101,6 @@ class ResizeController extends Controller
                         $y = round(($height - $resizeHeight) / 2);
                         $width = $resizeWidth;
                         $height = $resizeHeight;
-                        unset($resizeWidth, $resizeHeight);
                     }
                 }
                 imagealphablending($cropImage, false);
@@ -140,7 +139,6 @@ class ResizeController extends Controller
                     ->withBody($stream);
                 $this->setResponse($response);
             }
-            unset($originalHeight, $originalImage, $originalWidth, $width, $height, $size, $ratio, $mime, $x, $y);
         }
     }
 
