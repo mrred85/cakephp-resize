@@ -33,7 +33,7 @@ class ResizeHelper extends Helper
      * @param string $folder Folder path
      * @param int $width Image width
      * @param int $height Image height
-     * @param string|null $link Full base URL
+     * @param bool|null $link Full base URL
      * @param string $type Image crop type
      * @return array|string
      */
